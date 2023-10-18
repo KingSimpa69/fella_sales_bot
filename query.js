@@ -27,9 +27,11 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB');
   client.once(Events.ClientReady, c => {
-    console.log(`Ready! Logged in as ${c.user.tag}`);
+    console.log(`Connected to Discord`);
     checkNFTSales()
-    .then(() => process.exit(0))
+    .then(() => {
+      finishUp()
+    })
     .catch((error) => {
       process.exit(1);
     });
@@ -37,7 +39,7 @@ db.once('open', () => {
   client.login(DISCORD_TOKEN);
 });
 
-async function checkNFTSales() {
+const checkNFTSales = async () => {
   const url = `https://mainnet.base.org`;
   const provider = new ethers.JsonRpcProvider(url);
   const blockNumber = await provider.getBlockNumber();
@@ -57,7 +59,7 @@ async function checkNFTSales() {
         const { value } = await provider.getTransaction(transactionHash);
         const price = await gweiToEth(value);
 
-        if (event.name === 'Transfer') {
+        if (event.name === 'Transfer' && value !== 0n) {
             const { from, to, tokenId } = event.args;
 
             const existingSale = await Sales.findOne({ tx: transactionHash, fella: tokenId.toString() });
@@ -70,8 +72,6 @@ async function checkNFTSales() {
                     tx: transactionHash,
                     price: price
                 };
-
-
 
                 if (existingSale) {
                     existingSale.logged = true;
@@ -102,7 +102,7 @@ const sendMessageToDiscord = async (message) => {
     const Embed = new EmbedBuilder()
     .setColor(0x0099FF)
     .setTitle(`Fella #${message.id}`)
-    .setURL('https://basedfellas.io/collection')
+    .setURL(`https://basedfellas.io/collection/${message.id}`)
     .setAuthor({ name: 'Fella Sales Bot', iconURL: 'https://basedfellas.io/images/1.png', url: 'https://basedfellas.io' })
     .setDescription(`Fella #${message.id} has just been sold for ${message.price} ETH`)
     .addFields(
@@ -118,6 +118,14 @@ const sendMessageToDiscord = async (message) => {
     console.error('Discord channel not found.');
   }
 }
+
+const finishUp = async () => {
+  await db.close()
+  await client.destroy()
+  console.log("Connections closed!")
+  process.exit(0)
+}
+
 
 const shortenEthAddy = (addy) => {
   const shorty = addy.slice(0,5) + "..." + addy.slice(37,41)
