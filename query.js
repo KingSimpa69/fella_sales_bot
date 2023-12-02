@@ -25,19 +25,21 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
-  console.log('Connected to MongoDB');
+  console.log('Connected to MongoDB!');
   client.once(Events.ClientReady, c => {
-    console.log(`Connected to Discord`);
+    console.log(`Connected to Discord!`);
     checkNFTSales()
-    .then(() => {
-      finishUp()
-    })
-    .catch((error) => {
-      process.exit(1);
-    });
+    setInterval(checkNFTSales, 10000)
   });
   client.login(DISCORD_TOKEN);
 });
+
+process.on('SIGINT', async () => {
+  console.log('Shutting down the bot...');
+  await finishUp();
+});
+
+let periodInterval; 
 
 const checkNFTSales = async () => {
   const url = `https://mainnet.base.org`;
@@ -51,6 +53,21 @@ const checkNFTSales = async () => {
 
   const transactions = await provider.getLogs(filter);
 
+  const resetColor = '\x1b[0m';
+  const greenColor = '\x1b[32m';
+  const addPeriod = () => process.stdout.write('.')
+
+  process.stdout.clearLine();
+  process.stdout.cursorTo(0);
+  process.stdout.write(`${resetColor}${greenColor}[${blockNumber}] ${resetColor}Checking for Fella sales.`);
+  
+
+  if (periodInterval) {
+    clearInterval(periodInterval);
+  }
+
+  periodInterval = setInterval(addPeriod, 2800);
+  
   for (const log of transactions) {
     try {
         const { transactionHash, blockNumber } = log;
@@ -88,6 +105,9 @@ const checkNFTSales = async () => {
                     await newSale.save();
                 }
                 await sendMessageToDiscord(message);
+                process.stdout.clearLine();
+                process.stdout.cursorTo(0);
+                console.log(`Sale found @ ${message.tx}`)
             }
         }
     } catch (error) {
