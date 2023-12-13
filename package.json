@@ -4,16 +4,13 @@
   "description": "NFT sale scanner bot. Queries recent onchain transactions for Fella sales and shoots them to discord.",
   "main": "discordBot.js",
   "scripts": {
-    "start": "pm2 start discordBot.js --watch",
-	"stop": "pm2 delete discordBot",
-	"check": "pm2 list"
+    "start": "node discordBot.js"
   },
   "author": "KingSimpa69",
   "license": "MIT",
   "dependencies": {
     "discord.js": "^14.13.0",
     "ethers": "^6.8.0",
-    "mongoose": "^7.6.2",
-    "pm2": "^5.3.0"
+    "mongoose": "^7.6.2"
   }
 }
