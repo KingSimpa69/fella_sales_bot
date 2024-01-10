@@ -21,7 +21,7 @@ This Discord NFT Sales Bot is a tool built with nodeJS to facilitate and streaml
 
 
 
-## Usage (Linux)
+## Usage
 To get the bot up and running, follow the steps below:
 
 &nbsp;1. Clone the bot repository: `git clone https://github.com/KingSimpa69/fella_sales_bot.git`
