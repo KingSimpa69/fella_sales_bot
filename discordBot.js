@@ -8,8 +8,7 @@ const {
   EmbedBuilder,
 } = require("discord.js");
 const {
-  ALCHEMY_API_KEY,
-  FELLA_ADDY,
+  NFT_CONTRACT,
   ABI,
   MONGODB_URI,
   DISCORD_TOKEN,
@@ -62,7 +61,7 @@ const checkNFTSales = async () => {
     const provider = new ethers.JsonRpcProvider(url);
     const blockNumber = await provider.getBlockNumber();
     const filter = {
-      address: FELLA_ADDY,
+      address: NFT_CONTRACT,
       fromBlock: blockNumber - 1500,
       toBlock: "latest",
     };
@@ -87,7 +86,7 @@ const checkNFTSales = async () => {
     for (const log of transactions) {
       try {
         const { transactionHash, blockNumber } = log;
-        const contract = new ethers.Contract(FELLA_ADDY, ABI, provider);
+        const contract = new ethers.Contract(NFT_CONTRACT, ABI, provider);
         const event = contract.interface.parseLog(log);
         const { value } = await provider.getTransaction(transactionHash);
         const price = await gweiToEth(value);

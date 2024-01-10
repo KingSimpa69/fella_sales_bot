@@ -1,6 +1,5 @@
 {
-    "ALECHEMY_API_KEY":"Alchemy api key goes here",
-    "FELLA_ADDY":"0x217Ec1aC929a17481446A76Ff9B95B9a64F298cF",
+    "NFT_CONTRACT":"0x217Ec1aC929a17481446A76Ff9B95B9a64F298cF",
     "MONGODB_URI":"mongodb://127.0.0.1:27017/based_fellas",
     "DISCORD_TOKEN":"Discord bot token goes here",
     "DISCORD_CHANNEL_ID":"Discord channel goes here",
