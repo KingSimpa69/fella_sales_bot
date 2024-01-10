@@ -60,4 +60,6 @@ To get the bot up and running, follow the steps below:
 
    - Using npm: `npm run start`
 
-&nbsp;7. Customize the bot by modifying `discordBot.js` to fit your needs!
+&nbsp;7. To shutdown the bot, press `CTRL + C`
+
+&nbsp;8. Customize the bot for your project by modifying `discordBot.js`!
