@@ -10,6 +10,7 @@ const {
 const {
   NFT_CONTRACT,
   ABI,
+  WETH_ABI,
   MONGODB_URI,
   DISCORD_TOKEN,
   DISCORD_CHANNEL_ID,
@@ -59,10 +60,10 @@ const checkNFTSales = async () => {
   try {
     const url = `https://mainnet.base.org`;
     const provider = new ethers.JsonRpcProvider(url);
-    const blockNumber = await provider.getBlockNumber();
+    const currentBlock = await provider.getBlockNumber();
     const filter = {
       address: NFT_CONTRACT,
-      fromBlock: blockNumber - 1500,
+      fromBlock: currentBlock - 1500,
       toBlock: "latest",
     };
     const transactions = await provider.getLogs(filter);
@@ -74,7 +75,7 @@ const checkNFTSales = async () => {
     process.stdout.clearLine();
     process.stdout.cursorTo(0);
     process.stdout.write(
-      `${resetColor}${greenColor}[${blockNumber}] ${resetColor}Checking for Fella sales.`,
+      `${resetColor}${greenColor}[${currentBlock}] ${resetColor}Checking for Fella sales.`,
     );
 
     if (periodInterval) {
@@ -89,9 +90,24 @@ const checkNFTSales = async () => {
         const contract = new ethers.Contract(NFT_CONTRACT, ABI, provider);
         const event = contract.interface.parseLog(log);
         const { value } = await provider.getTransaction(transactionHash);
-        const price = await gweiToEth(value);
+        const WETH = new ethers.Contract("0x4200000000000000000000000000000000000006", WETH_ABI, provider);
+        const WETHLOGS = await WETH.queryFilter("Transfer",blockNumber,blockNumber);
 
-        if (event.name === "Transfer" && value !== 0n) {
+        const price = await gweiToEth(value);
+        let WETH_PRICE = 0
+
+        for (const log of WETHLOGS) {
+          try {
+            const { transactionHash: wethTxHash } = log;
+            if (wethTxHash === transactionHash) {
+              log.args[2] ? WETH_PRICE += parseInt(log.args[2]) : null
+            }
+          } catch (error) {
+            console.error("Error returning WETH values:", error);
+          }
+        }
+
+        if (event.name === "Transfer" && value !== 0n || WETH_PRICE !== 0) {
           const { from, to, tokenId } = event.args;
 
           const existingSale = await Sales.findOne({
@@ -105,7 +121,7 @@ const checkNFTSales = async () => {
               from: from,
               to: to,
               tx: transactionHash,
-              price: price,
+              price: WETH_PRICE === 0 ? price : (WETH_PRICE / 10 ** 18).toString(),
             };
 
             if (existingSale) {
