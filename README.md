@@ -10,7 +10,7 @@ This Discord NFT Sales Bot is a tool built with nodeJS to facilitate and streaml
 
 ## Requirements
 
-**NodeJS:** LTS (v20 at time of writing)
+**NodeJS:** Any version, although I prefer LTS (v20 at time of writing)
 
 **MongoDB:** Running locally
 
