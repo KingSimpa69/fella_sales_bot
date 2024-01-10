@@ -62,4 +62,4 @@ To get the bot up and running, follow the steps below:
 
 &nbsp;7. To shutdown the bot, press `CTRL + C`
 
-&nbsp;8. Customize the bot for your project by modifying "discordBot.js"!
+&nbsp;8. Customize the bot for your project by modifying "discordBot.js" where applicable!
