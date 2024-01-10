@@ -5,7 +5,7 @@
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 [![AGPL License](https://img.shields.io/badge/License-The%20Unlicense-blue.svg)](https://unlicense.org/)
 
-This Discord NFT Sales Bot is a tool built with nodeJS to facilitate and streamline the process of making NFT sale announcments within Discord communities within the Base Ecosystem. 
+This Discord NFT Sales Bot is a tool built with nodeJS to facilitate and streamline the process of making NFT sale announcments within Discord communities on the Base Ecosystem. 
 
 
 ## Requirements
